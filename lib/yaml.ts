@@ -1,10 +1,9 @@
 import yaml from 'js-yaml';
 import fs from 'fs';
 
-export const yamlToJson = () => {
+export const yamlToJson = (doc: string) => {
     try {
-        const doc = yaml.load(fs.readFileSync('public/test.yaml', 'utf8'));
-        console.log(JSON.stringify(doc, null, 2));
+        return yaml.safeLoad(doc);
     } catch (e) {
         console.log(e);
     }
@@ -13,7 +12,7 @@ export const yamlToJson = () => {
 export const jsonToYaml = () => {
     try {
         const doc = yaml.load(fs.readFileSync('public/test.json', 'utf8'));
-        console.log(yaml.dump(doc));
+        return yaml.dump(doc);
     } catch (e) {
         console.log(e);
     }
