@@ -1,7 +1,9 @@
+import styles from "./page.module.scss";
+
+
 export default function Home() {
-  return (
-    <main>
-      DawnBoard
-    </main>
-  );
+    return (
+        <main className={styles.main}>
+        </main>
+    );
 }
