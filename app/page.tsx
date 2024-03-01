@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import styles from "./page.module.scss";
-import { jsonToYaml, yamlToJson } from "@/lib/yaml";
+import { isJSONConvertible, isYAMLConvertible, jsonToYaml, yamlToJson } from "@/lib/yaml";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -13,12 +13,19 @@ export default function Home() {
     const [yaml, setYaml] = useState<string>("");
     const [json, setJson] = useState<string>("");
 
+    const [isYamlConvertible, setIsYamlConvertible] = useState<boolean>(false);
+    const [isJsonConvertible, setIsJsonConvertible] = useState<boolean>(false);
+
     return (
         <main className={ styles.main }>
             <Tabs defaultValue="yaml" className="w-[400px]">
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="yaml" onClick={ () => setYaml(jsonToYaml(json)) }>Yaml</TabsTrigger>
-                    <TabsTrigger value="json" onClick={ () => setJson(yamlToJson(yaml)) }>JSON</TabsTrigger>
+                    <TabsTrigger disabled={ !isJsonConvertible } value="yaml" onClick={ () => {
+                        setYaml(jsonToYaml(json));
+                    } }>Yaml</TabsTrigger>
+                    <TabsTrigger disabled={ !isYamlConvertible } value="json" onClick={ () => {
+                        setJson(yamlToJson(yaml));
+                    } }>JSON</TabsTrigger>
                 </TabsList>
                 <TabsContent value="yaml">
                     <Card>
@@ -27,14 +34,19 @@ export default function Home() {
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <div className="space-y-1">
-                                <Textarea value={ yaml } onChange={ (e) => setYaml(e.target.value) }
+                                <Textarea value={ yaml } onChange={ (e) => {
+                                    setIsYamlConvertible(isYAMLConvertible(e.target.value));
+                                    setYaml(e.target.value);
+                                } }
                                           rows={ 20 }/>
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button className="flex-auto" onClick={ () => {
+                            <Button disabled={ !isYamlConvertible } className={ `flex-auto ${ !isYamlConvertible ? "bg-red-500" : "" }` } onClick={ () => {
                                 setYaml(jsonToYaml(yamlToJson(yaml)));
-                            } }>Format Yaml</Button>
+                            } }>
+                                { !isYamlConvertible ? "Syntax Error" : "Format YAML" }
+                            </Button>
                         </CardFooter>
                     </Card>
                 </TabsContent>
@@ -45,14 +57,19 @@ export default function Home() {
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <div className="space-y-1">
-                                <Textarea value={ json } onChange={ (e) => setJson(e.target.value) }
+                                <Textarea value={ json } onChange={ (e) => {
+                                    setIsJsonConvertible(isJSONConvertible(e.target.value));
+                                    setJson(e.target.value);
+                                } }
                                           rows={ 20 }/>
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button className="flex-auto" onClick={ () => {
+                            <Button disabled={ !isJsonConvertible } className={ `flex-auto ${ !isJsonConvertible ? "bg-red-500" : "" }` } onClick={ () => {
                                 setJson(JSON.stringify(JSON.parse(json), null, 2));
-                            } }>Format JSON</Button>
+                            } }>
+                                { !isJsonConvertible ? "Syntax Error" : "Format JSON" }
+                            </Button>
                         </CardFooter>
                     </Card>
                 </TabsContent>
